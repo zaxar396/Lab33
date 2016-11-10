@@ -6,6 +6,13 @@ environment:
     matrix:
         - VSVER: 14
 
+configuration:
+    - plain
+#    - shared
+
+install:
+  - set INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%\build
+  
 before_build:
     - ps: >-
         If ($env:Platform -Match "x86") {
@@ -15,13 +22,11 @@ before_build:
             $env:VCVARS_PLATFORM="amd64"
             $env:TARGET="VC-WIN64A"
         }
-
     - ps: $env:VSCOMNTOOLS=(Get-Content ("env:VS" + "$env:VSVER" + "0COMNTOOLS"))
     - call "%VSCOMNTOOLS%\..\..\VC\vcvarsall.bat" %VCVARS_PLATFORM%
 
 build_script:
-  - cd Lab2
   - mkdir build && cd build
   - cmake .. -G "NMake Makefiles"
   - nmake
-  - tests -s -r compact
+  - test -s -r compact
